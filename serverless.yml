@@ -1,0 +1,42 @@
+service: uploadimagens
+
+provider:
+  name: aws
+  lambdaHashingVersion: 20201221
+  runtime: nodejs12.x
+  region: sa-east-1
+  memorySize: 256
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+          Resource:
+            - 'arn:aws:s3:::*'
+
+functions:
+  optimize:
+    handler: optimize.handle
+    environment:
+      bucket: srvuploadimagens
+    events:
+      - s3:
+          bucket: srvuploadimagens
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .jpg
+      - s3:
+          bucket: srvuploadimagens
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .jpeg
+      - s3:
+          bucket: srvuploadimagens
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .png
